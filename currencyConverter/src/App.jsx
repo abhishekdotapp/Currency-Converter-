@@ -9,7 +9,8 @@ function App() {
   const [from, setFrom] = useState("usd")
   const [to, setTo] = useState("inr")
   const [convertedAmount, setConvertedAmount] = useState()
-
+  const [conversionHistory, setConversionHistory] = useState([]);
+  
   const currencyInfo = useCurrencyInfo(from)
 
   const options = Object.keys(currencyInfo)
@@ -23,8 +24,48 @@ function App() {
 
   const convert = () => {
     setConvertedAmount(amount * currencyInfo[to])
+    setConversionHistory([...conversionHistory, {
+      from: from,
+      to: to,
+      amount: amount,
+      convertedAmount: convertedAmount
+    }]);
   }
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    if (name === 'amount') {
+      setAmount(value);
+    }
+  };
 
+  const saveData = () => {
+    localStorage.setItem('currencyData', JSON.stringify({
+      amount,
+      from,
+      to,
+      convertedAmount,
+      conversionHistory
+    }));
+  };
+
+  const loadData = () => {
+    const storedData = localStorage.getItem('currencyData');
+    if (storedData) {
+      const { amount, from, to, convertedAmount, conversionHistory } = JSON.parse(storedData);
+      setAmount(amount);
+      setFrom(from);
+      setTo(to);
+      setConvertedAmount(convertedAmount);
+      setConversionHistory(conversionHistory);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+    window.addEventListener('beforeunload', saveData);
+    return () => window.removeEventListener('beforeunload', saveData); // cleanup
+  }, []);
+  
   return (
     <div
       className="w-full h-screen flex flex-wrap justify-center items-center bg-cover bg-no-repeat"
@@ -74,6 +115,17 @@ function App() {
               Convert {from.toUpperCase()} to {to.toUpperCase()}
             </button>
           </form>
+          <div   
+ className="w-full mt-4">
+            <h2>Conversion History</h2>
+            <ul>
+              {conversionHistory.map((historyItem, index) => (
+                <li key={index}>
+                  {historyItem.amount} {historyItem.from} = {historyItem.convertedAmount} {historyItem.to}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </div>
