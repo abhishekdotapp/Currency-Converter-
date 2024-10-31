@@ -3,13 +3,13 @@ import { InputBox } from './components';
 import useCurrencyInfo from './hooks/useCurrencyInfo';
 
 function App() {
-  const [amount, setAmount] = useState(() => {
+  const [amount, setAmount] = useState((0) => {
     const savedAmount = localStorage.getItem('amount');
     return savedAmount ? parseFloat(savedAmount) : 0;
   });
   const [from, setFrom] = useState(() => localStorage.getItem('from') || "usd");
   const [to, setTo] = useState(() => localStorage.getItem('to') || "inr");
-  const [convertedAmount, setConvertedAmount] = useState(() => {
+  const [convertedAmount, setConvertedAmount] = useState((0) => {
     const savedConvertedAmount = localStorage.getItem('convertedAmount');
     return savedConvertedAmount ? parseFloat(savedConvertedAmount) : 0;
   });
