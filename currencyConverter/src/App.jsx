@@ -1,29 +1,49 @@
-import { useState } from 'react'
-import { InputBox } from './components'
-import useCurrencyInfo from './hooks/useCurrencyInfo'
-
+import { useState, useEffect } from 'react';
+import { InputBox } from './components';
+import useCurrencyInfo from './hooks/useCurrencyInfo';
 
 function App() {
+  const [amount, setAmount] = useState(() => {
+    const savedAmount = localStorage.getItem('amount');
+    return savedAmount ? parseFloat(savedAmount) : 0;
+  });
+  const [from, setFrom] = useState(() => localStorage.getItem('from') || "usd");
+  const [to, setTo] = useState(() => localStorage.getItem('to') || "inr");
+  const [convertedAmount, setConvertedAmount] = useState(() => {
+    const savedConvertedAmount = localStorage.getItem('convertedAmount');
+    return savedConvertedAmount ? parseFloat(savedConvertedAmount) : 0;
+  });
+  const [conversionHistory, setConversionHistory] = useState(() => {
+    const savedHistory = localStorage.getItem('conversionHistory');
+    return savedHistory ? JSON.parse(savedHistory) : [];
+  });
 
-  const [amount, setAmount] = useState()
-  const [from, setFrom] = useState("usd")
-  const [to, setTo] = useState("inr")
-  const [convertedAmount, setConvertedAmount] = useState()
+  const currencyInfo = useCurrencyInfo(from);
+  const options = Object.keys(currencyInfo);
 
-  const currencyInfo = useCurrencyInfo(from)
-
-  const options = Object.keys(currencyInfo)
+  useEffect(() => {
+    localStorage.setItem('amount', amount);
+    localStorage.setItem('from', from);
+    localStorage.setItem('to', to);
+    localStorage.setItem('convertedAmount', convertedAmount);
+    localStorage.setItem('conversionHistory', JSON.stringify(conversionHistory));
+  }, [amount, from, to, convertedAmount, conversionHistory]);
 
   const swap = () => {
-    setFrom(to)
-    setTo(from)
-    setConvertedAmount(amount)
-    setAmount(convertedAmount)
-  }
+    setFrom(to);
+    setTo(from);
+    setConvertedAmount(amount);
+    setAmount(convertedAmount);
+  };
 
   const convert = () => {
-    setConvertedAmount(amount * currencyInfo[to])
-  }
+    const newConvertedAmount = amount * currencyInfo[to];
+    setConvertedAmount(newConvertedAmount);
+
+    // Update conversion history
+    const newEntry = { from: `${amount} ${from.toUpperCase()}`, to: `${newConvertedAmount.toFixed(2)} ${to.toUpperCase()}` };
+    setConversionHistory(prevHistory => [...prevHistory, newEntry]);
+  };
 
   return (
     <div
@@ -37,8 +57,7 @@ function App() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              convert()
-
+              convert();
             }}
           >
             <div className="w-full mb-1">
@@ -74,10 +93,23 @@ function App() {
               Convert {from.toUpperCase()} to {to.toUpperCase()}
             </button>
           </form>
+
+          {/* Conversion History */}
+          <div className="mt-5">
+            <h2 className="text-lg font-bold">Previous Conversions</h2>
+            <ul className="list-disc pl-5">
+              {conversionHistory.map((entry, index) => (
+                <li key={index}>
+                  {entry.from} = {entry.to}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-export default App
+export default App;
+            
