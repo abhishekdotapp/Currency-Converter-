@@ -3,10 +3,10 @@ import { InputBox } from './components';
 import useCurrencyInfo from './hooks/useCurrencyInfo';
 
 function App() {
-  const [amount, setAmount] = useState(); // Set initial amount to 0
+  const [amount, setAmount] = useState(0); // Set initial amount to 0
   const [from, setFrom] = useState(() => localStorage.getItem('from') || "usd");
   const [to, setTo] = useState(() => localStorage.getItem('to') || "inr");
-  const [convertedAmount, setConvertedAmount] = useState(); // Set initial converted amount to 0
+  const [convertedAmount, setConvertedAmount] = useState(0); // Set initial converted amount to 0
   const [conversionHistory, setConversionHistory] = useState(() => {
     const savedHistory = localStorage.getItem('conversionHistory');
     return savedHistory ? JSON.parse(savedHistory) : [];
@@ -41,11 +41,6 @@ function App() {
     });
   };
 
-  const handleAmountChange = (newAmount) => {
-    setAmount(newAmount);
-    convert(); // Automatically convert when the amount changes
-  };
-
   return (
     <div
       className="w-full h-screen flex flex-wrap justify-center items-center bg-cover bg-no-repeat"
@@ -58,6 +53,7 @@ function App() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
+              convert();
             }}
           >
             <div className="w-full mb-1">
@@ -67,7 +63,7 @@ function App() {
                 currencyOptions={options}
                 onCurrencyChange={(currency) => setFrom(currency)}
                 selectCurrency={from}
-                onAmountChange={handleAmountChange} // Use the updated handler
+                onAmountChange={(amount) => setAmount(amount)}
               />
             </div>
             <div className="relative w-full h-0.5">
@@ -89,6 +85,9 @@ function App() {
                 amountDisable
               />
             </div>
+            <button type="submit" className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg">
+              Convert {from.toUpperCase()} to {to.toUpperCase()}
+            </button>
           </form>
 
           {/* Conversion History */}
