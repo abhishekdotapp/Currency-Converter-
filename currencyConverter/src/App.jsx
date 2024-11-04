@@ -58,7 +58,6 @@ function App() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              // Removed the convert call here
             }}
           >
             <div className="w-full mb-1">
@@ -68,7 +67,7 @@ function App() {
                 currencyOptions={options}
                 onCurrencyChange={(currency) => setFrom(currency)}
                 selectCurrency={from}
-                onAmountChange={handleAmountChange} // Updated to use the new handler
+                onAmountChange={handleAmountChange} // Use the updated handler
               />
             </div>
             <div className="relative w-full h-0.5">
@@ -90,9 +89,6 @@ function App() {
                 amountDisable
               />
             </div>
-            <button type="submit" className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg">
-              Convert {from.toUpperCase()} to {to.toUpperCase()}
-            </button>
           </form>
 
           {/* Conversion History */}
