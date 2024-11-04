@@ -41,6 +41,11 @@ function App() {
     });
   };
 
+  const handleAmountChange = (newAmount) => {
+    setAmount(newAmount);
+    convert(); // Automatically convert when the amount changes
+  };
+
   return (
     <div
       className="w-full h-screen flex flex-wrap justify-center items-center bg-cover bg-no-repeat"
@@ -53,7 +58,7 @@ function App() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              convert();
+              // Removed the convert call here
             }}
           >
             <div className="w-full mb-1">
@@ -63,7 +68,7 @@ function App() {
                 currencyOptions={options}
                 onCurrencyChange={(currency) => setFrom(currency)}
                 selectCurrency={from}
-                onAmountChange={(amount) => setAmount(amount)}
+                onAmountChange={handleAmountChange} // Updated to use the new handler
               />
             </div>
             <div className="relative w-full h-0.5">
